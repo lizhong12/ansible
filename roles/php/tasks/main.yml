@@ -14,7 +14,6 @@
     - mhash
     - mhash-devel
     - openssl-devel
-    - openldap-devel
 - name: tar php
   unarchive:
     src: php-5.6.34.tar.gz
@@ -22,7 +21,7 @@
 - name: install php
   shell: "{{item}}"
   with_items:
-    - ./configure --prefix=/usr/local/php  --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir=/usr/local/libiconv --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-fpm --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --with-gettext --with-ldap --enable-pcntl --enable-sockets --with-xmlrpc --enable-soap --enable-short-tags --enable-static --with-xsl --with-fpm-user=nginx  --with-fpm-group=nginx  --enable-ftp --enable-opcache=yes
+    - ./configure --prefix=/usr/local/php  --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir=/usr/local/libiconv --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-fpm --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --with-gettext --enable-pcntl --enable-sockets --with-xmlrpc --enable-soap --enable-short-tags --enable-static --with-xsl --with-fpm-user=nginx  --with-fpm-group=nginx  --enable-ftp --enable-opcache=yes
     - make
     - make install
   args:
