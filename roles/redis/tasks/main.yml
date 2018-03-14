@@ -1,0 +1,49 @@
+- name: tar xf redis.tar.gz
+  unarchive:
+    src: redis-4.0.8.tar.gz
+    dest: /usr/local/src
+- name: install redis
+  shell: "{{item}}"
+  with_items:
+    - make
+    - make install
+  args:
+    chdir: /usr/local/src/redis-4.0.8
+- name: set vm.overcommit_memory
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    reload: yes
+- name: echo into /etc/rc.local
+  lineinfile:
+    path: /etc/rc.local
+    line: "echo 511 > /proc/sys/net/core/somaxconn\necho never > /sys/kernel/mm/transparent_hugepage/enabled"
+- name: mkdir /redis/data
+  file:
+    path: /redis/data
+    state: directory
+- name: mkdir /redis/log
+  file:
+    path: /redis/log
+    state: directory
+- name: mkdir /redis/conf
+  file:
+    path: /redis/conf
+    state: directory
+- name: cp redis.conf
+  template:
+    src: redis.conf.j2
+    dest: /redis/conf/{{PORT}}.conf
+  notify: reload redis server
+- name: cp start scripts
+  template:
+    src: redis.j2
+    dest: /etc/init.d/redis_{{PORT}}
+    mode: 0755
+- name: init start scripts
+  shell: systemctl daemon-reload
+- name: start redis
+  service:
+    name: redis_{{PORT}} 
+    state: started 
+    enabled: yes

@@ -1,0 +1,4 @@
+- name: reload redis server
+  service:
+    name: redis_{{PORT}}
+    state: restarted

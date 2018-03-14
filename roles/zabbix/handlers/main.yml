@@ -1,0 +1,12 @@
+- name: reload nginx server
+  service: 
+    name: nginx 
+    state: restarted 
+- name: reload zabbix-server
+  service: 
+    name: zabbix_server 
+    state: restarted 
+- name: reload zabbix-agentd
+  service: 
+    name: zabbix_agentd 
+    state: restarted 

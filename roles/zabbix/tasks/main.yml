@@ -1,0 +1,130 @@
+- name: yum install dependency
+  yum: name={{item}}
+  with_items:
+    - fping
+    - unixODBC-devel
+    - openssl-devel
+    - OpenIPMI-devel
+    - java-devel
+    - libevent-devel
+    - MySQL-python
+- name: create user zabbix
+  user:
+    name: zabbix
+    createhome: no
+    shell: /sbin/nologin
+- name: tar xf zabbix
+  unarchive:
+    src: zabbix-3.4.7.tar.gz
+    dest: /usr/local/src/
+- name: install zabbix
+  shell: "{{item}}"
+  with_items:
+    - /usr/local/src/zabbix-3.4.7/configure --prefix=/usr/local/zabbix  --enable-server --enable-agent --enable-java --enable-ipv6 --with-mysql=/usr/local/mysql/bin/mysql_config --with-libcurl --with-libxml2 --with-openipmi --with-unixodbc --with-openssl
+    - make install
+  args:
+    chdir: /usr/local/src/zabbix-3.4.7
+- name: mkdir /var/lib/mysql
+  file:
+    path: /var/lib/mysql
+    state: directory
+- name: create link mysql.sock
+  file:
+    src: /tmp/mysql.sock
+    dest: /var/lib/mysql/mysql.sock
+    state: link
+- name: create mysql_user zabbix
+  mysql_user:
+    name: zabbix
+    priv: 'zabbix.*:ALL'
+    password: 123456
+    host: localhost
+- name: create database zabbix
+  mysql_db:
+    name: zabbix
+    state: present
+- name: source schema.sql
+  mysql_db:
+    name: zabbix
+    state: import
+    target: /usr/local/src/zabbix-3.4.7/database/mysql/schema.sql
+- name: source images.sql
+  mysql_db:
+    name: zabbix
+    state: import
+    target: /usr/local/src/zabbix-3.4.7/database/mysql/images.sql
+- name: source data.sql
+  mysql_db:
+    name: zabbix
+    state: import
+    target: /usr/local/src/zabbix-3.4.7/database/mysql/data.sql
+
+- name: mkdir
+  file:
+    path: /usr/local/nginx/html/zabbix
+    state: directory
+    owner: nginx
+    group: nginx
+- name: copy html
+  copy:
+    src: /usr/local/src/zabbix-3.4.7/frontends/php/
+    dest: /usr/local/nginx/html/zabbix/
+    owner: nginx
+    group: nginx
+    mode: 0755
+- name: modify character set
+  copy:
+    src: simsun.ttc
+    dest: /usr/local/nginx/html/zabbix/fonts/DejaVuSans.ttf
+- name: modify nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/nginx/conf/nginx.conf
+  notify: reload nginx server
+- name: mkdir /var/log/zabbix
+  file:
+    path: /var/log/zabbix
+    state: directory
+    owner: zabbix
+    group: zabbix
+- name: modify php.ini
+  shell: "{{item}}"
+  with_items:
+    - sed -i 's#max_execution_time = 30#max_execution_time = 300#;s#max_input_time = 60#max_input_time = 300#;s#post_max_size = 8M#post_max_size = 16M#;910a date.timezone = Asia/Shanghai'  /usr/local/php/lib/php.ini
+- name: restart php-fpm
+  service:
+    name: php-fpm
+    state: restarted
+  
+- name: copy init.d/zabbix_server
+  template:
+    src: zabbix_server.j2
+    dest: /etc/init.d/zabbix_server
+    mode: 0755
+- name: copy init.d/zabbix-agentd
+  template:
+    src: zabbix_agentd.j2
+    dest: /etc/init.d/zabbix_agentd
+    mode: 0755
+- name: init
+  shell: systemctl daemon-reload
+- name: copy zabbix-server.conf
+  template:
+    src: zabbix_server.conf.j2
+    dest: /usr/local/zabbix/etc/zabbix_server.conf
+  notify: reload zabbix-server
+- name: copy zabbix-agentd.conf
+  template:
+    src: zabbix_agentd.conf.j2
+    dest: /usr/local/zabbix/etc/zabbix_agentd.conf
+  notify: reload zabbix-agentd
+- name: start zabbix-server
+  service:
+    name: zabbix_server
+    state: started
+    enabled: yes
+- name: start zabbix-agent
+  service:
+    name: zabbix_agentd
+    state: started
+    enabled: yes

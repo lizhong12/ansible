@@ -1,0 +1,42 @@
+- name: install pcre pcre-devel openssl-devel
+  yum: name={{ item }}
+  with_items:
+    - pcre
+    - pcre-devel
+    - openssl-devel
+- name: create user nginx
+  user:
+    name: nginx
+    createhome: no
+    shell: /sbin/nologin
+- name: tar nginx
+  unarchive:
+    src: nginx-1.12.2.tar.gz
+    dest: /usr/local/src/
+- name: install nginx
+  shell: "{{ item }}"
+  with_items:
+    - ./configure --prefix=/usr/local/nginx --user=nginx --group=nginx --with-http_ssl_module --with-http_stub_status_module --with-file-aio --with-stream
+    - make
+    - make install
+  args:
+    chdir: /usr/local/src/nginx-1.12.2
+- name: copy nginx.conf
+  template: 
+    src: default.conf.j2 
+    dest: /usr/local/nginx/conf/nginx.conf
+  notify: reload nginx server
+- name: copy start scripts
+  template: 
+    src: nginx.j2 
+    dest: /lib/systemd/system/nginx.service
+- name: start nginx service
+  service: 
+    name: nginx 
+    state: started 
+    enabled: yes
+- name: create link nginx
+  file:
+    src: /usr/local/nginx/sbin/nginx
+    dest: /usr/local/sbin/nginx
+    state: link
