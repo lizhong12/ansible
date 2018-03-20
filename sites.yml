@@ -6,3 +6,4 @@
     - {role: mysql,tags: mysql}
     - {role: redis,tags: redis}
     - {role: zabbix,tags: zabbix}
+    - {role: wordpress,tags: wordpress}

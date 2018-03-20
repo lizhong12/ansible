@@ -26,6 +26,10 @@
     src: default.conf.j2 
     dest: /usr/local/nginx/conf/nginx.conf
   notify: reload nginx server
+- name: mkdir conf.d
+  file:
+    path: /usr/local/nginx/conf/conf.d
+    state: derectory
 - name: copy start scripts
   template: 
     src: nginx.j2 

@@ -1,0 +1,21 @@
+- name: tar xf wordpress
+  unarchive:
+    src: wordpress-4.9.4-zh_CN.tar.gz
+    dest: /usr/local/nginx/html/
+    owner: nginx
+    group: nginx
+- name: create mysql_user wordpress
+  mysql_user:
+    name: wordpress
+    priv: 'wordpress.*:ALL'
+    password: 123456
+    host: localhost
+- name: create database wordpress
+  mysql_db:
+    name: wordpress
+    state: present
+- name: copy nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/nginx/conf/nginx.conf
+  notify: reload nginx server 
