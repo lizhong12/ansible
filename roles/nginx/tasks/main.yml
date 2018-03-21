@@ -29,7 +29,7 @@
 - name: mkdir conf.d
   file:
     path: /usr/local/nginx/conf/conf.d
-    state: derectory
+    state: directory
 - name: copy start scripts
   template: 
     src: nginx.j2 
