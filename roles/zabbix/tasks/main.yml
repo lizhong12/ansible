@@ -65,17 +65,12 @@
     state: directory
     owner: nginx
     group: nginx
+
 - name: copy html
   shell: "{{item}}"
   with_items:
-    - cp -a /usr/local/src/zabbix-3.4.7/frontends/php/* /usr/local/nginx/html/zabbix/
-    - chown nginx.nginx /usr/local/nginx/html/zabbix/ -R
-  copy:
-    src: /usr/local/src/zabbix-3.4.7/frontends/php/
-    dest: /usr/local/nginx/html/zabbix/
-    owner: nginx
-    group: nginx
-    mode: 0755
+    - "cp -a /usr/local/src/zabbix-3.4.7/frontends/php/* /usr/local/nginx/html/zabbix/"
+    - "chown nginx.nginx /usr/local/nginx/html/zabbix/ -R"
 - name: modify character set
   copy:
     src: simsun.ttc
