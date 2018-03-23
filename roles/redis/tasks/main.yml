@@ -2,6 +2,7 @@
   unarchive:
     src: redis-4.0.8.tar.gz
     dest: /usr/local/src
+    copy: yes
 - name: install redis
   shell: "{{item}}"
   with_items:

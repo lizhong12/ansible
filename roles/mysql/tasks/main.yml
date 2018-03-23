@@ -18,6 +18,7 @@
   unarchive:
     src: mysql-5.6.39.tar.gz 
     dest: /usr/local/src/
+    copy: yes
 - name: mkdir log
   file:
     path: /data/log

@@ -18,6 +18,7 @@
   unarchive:
     src: php-5.6.34.tar.gz
     dest: /usr/local/src/
+    copy: yes
 - name: install php
   shell: "{{item}}"
   with_items:

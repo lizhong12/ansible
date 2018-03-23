@@ -13,6 +13,7 @@
   unarchive:
     src: nginx-1.12.2.tar.gz
     dest: /usr/local/src/
+    copy: yes
 - name: install nginx
   shell: "{{ item }}"
   with_items:

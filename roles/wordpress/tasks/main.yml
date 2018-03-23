@@ -2,6 +2,7 @@
   unarchive:
     src: wordpress-4.9.4-zh_CN.tar.gz
     dest: /usr/local/nginx/html/
+    copy: yes
     owner: nginx
     group: nginx
 - name: create mysql_user wordpress

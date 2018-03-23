@@ -17,6 +17,7 @@
   unarchive:
     src: zabbix-3.4.7.tar.gz
     dest: /usr/local/src/
+    copy: yes
 - name: install zabbix
   shell: "{{item}}"
   with_items:
